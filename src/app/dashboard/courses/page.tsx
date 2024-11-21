@@ -15,7 +15,7 @@ const initialCourses = [
 
 export default function CoursesPage() {
   const [searchQuery, setSearchQuery] = useState('');
-  const [courses, setCourses] = useState(initialCourses);
+  const [courses] = useState(initialCourses);
 
   const filteredCourses = courses.filter(course =>
     course.name.toLowerCase().includes(searchQuery.toLowerCase())
