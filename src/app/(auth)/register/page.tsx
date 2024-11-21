@@ -1,11 +1,9 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 
 export default function Register() {
-  // @ts-ignore
-  const [isUploading, setIsUploading] = useState(false);
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#EDF2FB] via-[#E2EAFC] to-[#D7E3FC] py-12 px-4 sm:px-6 lg:px-8">
@@ -123,7 +121,6 @@ export default function Register() {
                       type="file"
                       className="sr-only"
                       accept=".pdf,.jpg,.jpeg,.png"
-                      onChange={() => setIsUploading(true)}
                     />
                   </label>
                   <p className="pl-1">or drag and drop</p>
