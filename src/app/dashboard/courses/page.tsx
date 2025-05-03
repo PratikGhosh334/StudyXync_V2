@@ -1,7 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { supabase } from '@/utils/supabaseClient';
+import type { User } from '@supabase/supabase-js';
 
 // Mock data for courses (replace with actual API call)
 const initialCourses = [
@@ -14,12 +16,45 @@ const initialCourses = [
 ];
 
 export default function CoursesPage() {
+  const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [courses] = useState(initialCourses);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUser(user);
+      setLoading(false);
+    });
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => listener?.subscription.unsubscribe();
+  }, []);
 
   const filteredCourses = courses.filter(course =>
     course.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  if (loading) {
+    return <div className="text-center py-12 text-[#006494] text-lg">Loading...</div>;
+  }
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#EDF2FB] via-[#E2EAFC] to-[#D7E3FC]">
+        <div className="bg-white/80 p-8 rounded-lg shadow-md text-center">
+          <h2 className="text-2xl font-bold mb-4 text-[#006494]">Sign in first to view the course notes</h2>
+          <Link
+            href="/login"
+            className="inline-block px-6 py-3 bg-gradient-to-r from-[#0582CA] to-[#00A6FB] text-white rounded-md shadow-lg hover:opacity-90 transition"
+          >
+            Go to Login
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#EDF2FB] via-[#E2EAFC] to-[#D7E3FC] py-8 px-4 sm:px-6 lg:px-8">

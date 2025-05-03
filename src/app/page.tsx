@@ -1,6 +1,30 @@
+'use client'
+
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { supabase } from '@/utils/supabaseClient';
+import type { User } from '@supabase/supabase-js';
 
 export default function Home() {
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => setUser(user));
+    const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null);
+    });
+    return () => listener?.subscription.unsubscribe();
+  }, []);
+
+  const handleGoogleLogin = async () => {
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin + '/login',
+      },
+    });
+  };
+
   return (
     <div className="flex flex-col">
       {/* Hero Section with Enhanced Gradient Background */}
@@ -21,19 +45,21 @@ export default function Home() {
               Your all-in-one platform for synchronized learning and collaboration
             </p>
             
-            {/* Interactive CTA Buttons */}
-            <div className="flex gap-4 justify-center">
+            <div className="flex gap-2 justify-center">
+              {/* Only show sign in button if not signed in */}
+              {!user && (
+                <button
+                  onClick={handleGoogleLogin}
+                  className="group relative px-6 py-3 bg-gradient-to-r from-[#0582CA] to-[#00A6FB] text-white rounded-md shadow-lg overflow-hidden"
+                >
+                  <span className="absolute inset-0 bg-gradient-to-r from-[#00A6FB] to-[#0582CA] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                  <span className="relative group-hover:scale-105 transition-transform inline-block">
+                    Sign in with Google
+                  </span>
+                </button>
+              )}
               <Link 
-                href="/register" 
-                className="group relative px-6 py-3 bg-gradient-to-r from-[#0582CA] to-[#00A6FB] text-white rounded-md shadow-lg overflow-hidden"
-              >
-                <span className="absolute inset-0 bg-gradient-to-r from-[#00A6FB] to-[#0582CA] opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-                <span className="relative group-hover:scale-105 transition-transform inline-block">
-                  Get Started
-                </span>
-              </Link>
-              <Link 
-                href="/dashboard/notes" 
+                href="/dashboard/courses" 
                 className="group px-6 py-3 bg-white/50 backdrop-blur-sm border border-[#ABC4FF] text-[#006494] rounded-md shadow-lg hover:bg-white/70 transition-all duration-300"
               >
                 <span className="relative group-hover:translate-x-1 transition-transform inline-block">
@@ -46,40 +72,38 @@ export default function Home() {
       </section>
 
       {/* Features Section */}
-      <section className="bg-gradient-to-b from-[#E2EAFC] to-[#EDF2FB] py-12 px-8">
-        <div className="max-w-6xl mx-auto">
-          <h2 className="text-3xl font-bold text-center mb-12 bg-gradient-to-r from-[#003554] to-[#006494] text-transparent bg-clip-text">
-            Why Choose StudyXync?
-          </h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            {/* Interactive Feature Cards */}
-            <div className="group bg-white/70 backdrop-blur-sm p-6 rounded-lg border border-[#ABC4FF] hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <h3 className="text-xl font-semibold mb-3 text-[#006494] group-hover:text-[#0582CA] transition-colors">
-                Easy Note Sharing
-              </h3>
-              <p className="text-[#003554] group-hover:text-[#006494] transition-colors">
-                Share your teaching materials seamlessly with colleagues worldwide
-              </p>
-            </div>
-            <div className="group bg-white/70 backdrop-blur-sm p-6 rounded-lg border border-[#ABC4FF] hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <h3 className="text-xl font-semibold mb-3 text-[#006494] group-hover:text-[#0582CA] transition-colors">
-                Course Organization
-              </h3>
-              <p className="text-[#003554] group-hover:text-[#006494] transition-colors">
-                Find resources organized by courses and subjects
-              </p>
-            </div>
-            <div className="group bg-white/70 backdrop-blur-sm p-6 rounded-lg border border-[#ABC4FF] hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-              <h3 className="text-xl font-semibold mb-3 text-[#006494] group-hover:text-[#0582CA] transition-colors">
-                Smart Sorting
-              </h3>
-              <p className="text-[#003554] group-hover:text-[#006494] transition-colors">
-                Discover popular content sorted by views and ratings
-              </p>
-            </div>
+      <div className="max-w-6xl mx-auto">
+        <h2 className="text-3xl font-bold text-center mb-12 bg-gradient-to-r from-[#003554] to-[#006494] text-transparent bg-clip-text">
+          Why Choose StudyXync?
+        </h2>
+        <div className="grid md:grid-cols-3 gap-8">
+          {/* Interactive Feature Cards */}
+          <div className="group bg-white/70 backdrop-blur-sm p-6 rounded-lg border border-[#ABC4FF] hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+            <h3 className="text-xl font-semibold mb-3 text-[#006494] group-hover:text-[#0582CA] transition-colors">
+              Easy Note Sharing
+            </h3>
+            <p className="text-[#003554] group-hover:text-[#006494] transition-colors">
+              Share your teaching materials seamlessly with colleagues worldwide
+            </p>
+          </div>
+          <div className="group bg-white/70 backdrop-blur-sm p-6 rounded-lg border border-[#ABC4FF] hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+            <h3 className="text-xl font-semibold mb-3 text-[#006494] group-hover:text-[#0582CA] transition-colors">
+              Course Organization
+            </h3>
+            <p className="text-[#003554] group-hover:text-[#006494] transition-colors">
+              Find resources organized by courses and subjects
+            </p>
+          </div>
+          <div className="group bg-white/70 backdrop-blur-sm p-6 rounded-lg border border-[#ABC4FF] hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
+            <h3 className="text-xl font-semibold mb-3 text-[#006494] group-hover:text-[#0582CA] transition-colors">
+              Smart Sorting
+            </h3>
+            <p className="text-[#003554] group-hover:text-[#006494] transition-colors">
+              Discover popular content sorted by views and ratings
+            </p>
           </div>
         </div>
-      </section>
+      </div>
 
       {/* Stats Section */}
       <section className="bg-gradient-to-b from-[#EDF2FB] to-[#D7E3FC] py-16 px-8">
