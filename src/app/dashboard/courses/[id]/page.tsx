@@ -191,7 +191,7 @@ export default function CourseDetailPage({ params }: PageProps) {
           className="w-full p-2 mb-4 border rounded text-gray-700 focus:outline-none focus:border-blue-500 min-h-[100px]"
         />
         
-        <div className="flex gap-4 items-center mb-4">
+        <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center mb-4">
           <input
             type="file"
             accept=".pdf,.doc,.docx"
@@ -200,12 +200,12 @@ export default function CourseDetailPage({ params }: PageProps) {
               setError(null);
               setSuccess(null);
             }}
-            className="text-gray-700"
+            className="text-gray-700 w-full sm:w-auto"
           />
           <button
             onClick={handleUpload}
             disabled={uploading}
-            className={`px-6 py-2 rounded text-white transition-colors ${
+            className={`w-full sm:w-auto px-6 py-2 rounded text-white transition-colors ${
               uploading 
                 ? 'bg-blue-400 cursor-not-allowed'
                 : 'bg-blue-600 hover:bg-blue-700'
