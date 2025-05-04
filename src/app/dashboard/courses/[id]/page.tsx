@@ -1,7 +1,6 @@
 'use client';
 import { useState, use, useCallback, useEffect } from 'react';
 import { supabase } from '@/utils/supabaseClient';
-import { useRouter } from 'next/navigation';
 
 // Define the Note type
 interface Note {
